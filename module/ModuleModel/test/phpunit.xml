@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="Bootstrap.php">
+    <testsuites>
+        <testsuite name="zf2tutorial">
+            <directory>./ModuleModelTest</directory>
+            <!--<file>ModuleApiTest/Controller/AssetControllerTest.php</file>//-->
+            <!--<file>ModuleApiTest/Controller/PackageControllerTest.php</file>//-->
+            <!--<file>ModuleApiTest/Controller/MatrixControllerTest.php</file>//-->
+        </testsuite>
+    </testsuites>
+</phpunit>

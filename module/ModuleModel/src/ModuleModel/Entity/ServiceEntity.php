@@ -20,7 +20,7 @@ class ServiceEntity extends Util\AbstractEntity
     
     /**
      * @var \ModuleModel\Entity\CompanyEntity
-     * @ORM\OneToOne(targetEntity="ModuleModel\Entity\CompanyEntity")
+     * @ORM\ManyToOne(targetEntity="ModuleModel\Entity\CompanyEntity")
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
     protected $company;

@@ -26,7 +26,9 @@ return array(
     
     'service_manager' => array(
         'invokables' => array(
-            'ModuleModel\Box' => 'ModuleModel\Model\BoxModel',
+            'ModuleModel\User' => 'ModuleModel\Model\UserModel',
+            'ModuleModel\Company' => 'ModuleModel\Model\CompanyModel',
+            'ModuleModel\Schedule' => 'ModuleModel\Model\ScheduleModel',
         ),
     ),
     
