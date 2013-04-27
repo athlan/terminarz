@@ -32,6 +32,12 @@ class ScheduleEntity extends Util\AbstractEntity
     protected $type;
     
     /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    protected $name;
+    
+    /**
      * @var int
      * @ORM\Column(type="integer")
      */
@@ -78,22 +84,38 @@ class ScheduleEntity extends Util\AbstractEntity
         $this->company = $company;
     }
     
-	/**
+    /**
      * @return int
      */
     public function getType()
     {
         return $this->type;
     }
-
-	/**
+    
+    /**
      * @param int $type
      */
     public function setType($type)
     {
         $this->type = $type;
     }
-
+    
+    /**
+     * @return int
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+    
+    /**
+     * @param int $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    
 	/**
      * @return int
      */

@@ -41,13 +41,13 @@ class EventOccurenceEntity extends Util\AbstractEntity
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="date", nullable=true);
+     * @ORM\Column(type="datetime", nullable=true);
      */
     protected $repeatDateStart;
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="date", nullable=true);
+     * @ORM\Column(type="datetime", nullable=true);
      */
     protected $repeatDateStop;
     
@@ -71,13 +71,13 @@ class EventOccurenceEntity extends Util\AbstractEntity
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="date");
+     * @ORM\Column(type="datetime");
      */
     protected $durationStart;
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="date");
+     * @ORM\Column(type="datetime");
      */
     protected $durationStop;
     

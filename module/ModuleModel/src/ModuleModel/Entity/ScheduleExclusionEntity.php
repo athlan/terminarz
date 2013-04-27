@@ -33,13 +33,13 @@ class ScheduleExclusionEntity extends Util\AbstractEntity
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="date", nullable=true);
+     * @ORM\Column(type="datetime", nullable=true);
      */
     protected $durationStart;
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="date", nullable=true);
+     * @ORM\Column(type="datetime", nullable=true);
      */
     protected $durationStop;
     

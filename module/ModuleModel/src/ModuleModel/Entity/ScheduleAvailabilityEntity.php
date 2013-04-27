@@ -20,7 +20,7 @@ class ScheduleAvailabilityEntity extends Util\AbstractEntity
     
     /**
      * @var \ModuleModel\Entity\ScheduleEntity
-     * @ORM\OneToOne(targetEntity="ModuleModel\Entity\ScheduleEntity")
+     * @ORM\ManyToOne(targetEntity="ModuleModel\Entity\ScheduleEntity")
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
     protected $schedule;
@@ -33,13 +33,13 @@ class ScheduleAvailabilityEntity extends Util\AbstractEntity
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="date", nullable=true);
+     * @ORM\Column(type="datetime", nullable=true);
      */
     protected $durationStart;
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="date", nullable=true);
+     * @ORM\Column(type="datetime", nullable=true);
      */
     protected $durationStop;
     
