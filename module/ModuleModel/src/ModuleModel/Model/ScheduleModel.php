@@ -2,6 +2,8 @@
 
 namespace ModuleModel\Model;
 
+use ModuleModel\Entity\ScheduleTypeEnum;
+
 use ModuleModel\Entity\ScheduleEntity;
 
 class ScheduleModel extends Util\AbstractDoctrineModel
@@ -26,13 +28,24 @@ class ScheduleModel extends Util\AbstractDoctrineModel
         return $this->em()->getRepository($this->entity)->findAll();
     }
     
-    public function getScheduleWeekdayAvailibility(ScheduleEntity $schedule, $weekday)
+    public function getScheduleAvailibilityWeekday(ScheduleEntity $schedule, $weekday)
     {
         return $this->em()
             ->getRepository($this->entityAvailability)->findBy([
                 'schedule' => $schedule->getId(),
                 'repeatWeekday' => $weekday,
             ], [
+                'durationStart' => 'ASC',
+            ]);
+    }
+    
+    public function getScheduleAvailibilityWeekly(ScheduleEntity $schedule)
+    {
+        return $this->em()
+            ->getRepository($this->entityAvailability)->findBy([
+                'schedule' => $schedule->getId(),
+            ], [
+                'repeatWeekday' => 'ASC',
                 'durationStart' => 'ASC',
             ]);
     }

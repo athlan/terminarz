@@ -2,6 +2,8 @@
 
 namespace ModuleModel\Model;
 
+use ModuleModel\Entity\ScheduleEntity;
+
 use ModuleModel\Entity\UserEntity;
 
 use Zend\Cache\Storage\Event;
@@ -15,6 +17,7 @@ use ModuleModel\Entity\EventEntity;
 class EventModel extends Util\AbstractDoctrineModel
 {
     private $entity = 'ModuleModel\Entity\EventEntity';
+    private $entityOccurence = 'ModuleModel\Entity\EventOccurenceEntity';
     
     /**
      * @param int $id
@@ -31,6 +34,57 @@ class EventModel extends Util\AbstractDoctrineModel
     public function fetchAll(array $params = [])
     {
         return $this->em()->getRepository($this->entity)->findAll();
+    }
+    
+    public function getWeeklyPlannedEvents(ScheduleEntity $schedule)
+    {
+        $q = $this->em()->createQueryBuilder();
+    
+        $q->select(['item'])
+          ->from($this->entity, 'item')
+          ->andWhere($q->expr()->eq('item.schedule', $schedule->getId()))
+          ->andWhere($q->expr()->isNotNull('item.repeatWeekday'));
+        
+        return $q->getQuery()->execute();
+    }
+    
+    public function getWeeklyPlannedOcurredEvents(ScheduleEntity $schedule, \DateTime $date)
+    {
+        $dateStart = new \DateTime($date->format("Y") . "W" . $date->format("W"));
+        $dateStop = new \DateTime($dateStart->format("Y-m-d ") . "+1 week");
+    
+        $q = $this->em()->createQueryBuilder();
+    
+        $q->select(['item'])
+          ->from($this->entityOccurence, 'item')
+          ->andWhere($q->expr()->eq('item.schedule', $schedule->getId()))
+          ->andWhere($q->expr()->between('item.durationStart', $q->expr()->literal($dateStart->format("Y-m-d ") . '00:00:00'), $q->expr()->literal($dateStop->format("Y-m-d ") . '00:00:00')));
+    
+        return $q->getQuery()->execute();
+    }
+    
+    public function getWeeklyPlannedOcurredEventsGrouppedStats(ScheduleEntity $schedule, \DateTime $date)
+    {
+        $dateStart = new \DateTime($date->format("Y") . "W" . $date->format("W"));
+        $dateStop = new \DateTime($dateStart->format("Y-m-d ") . "+1 week");
+    
+        $q = $this->em()->createQueryBuilder();
+        
+        $q->select('event.id AS item_key')
+          ->from($this->entityOccurence, 'item')
+          ->join('item.event', 'event')
+          ->andWhere($q->expr()->eq('item.schedule', $schedule->getId()))
+          ->andWhere($q->expr()->between('item.durationStart', $q->expr()->literal($dateStart->format("Y-m-d ") . '00:00:00'), $q->expr()->literal($dateStop->format("Y-m-d ") . '00:00:00')))
+          ->groupBy('event.id')
+          ->addSelect('COUNT(item.id) AS stat_count');
+        
+        $result = [];
+        
+        foreach ($q->getQuery()->execute() as $row) {
+            $result[$row['item_key']] = (int) $row['stat_count'];
+        }
+        
+        return $result;
     }
     
     /**
@@ -72,7 +126,7 @@ class EventModel extends Util\AbstractDoctrineModel
         $modelSchedule = $this->getModelSchedule();
         
         $weekday = $event->getDurationStart()->format('w');
-        $availability = $modelSchedule->getScheduleWeekdayAvailibility($event->getSchedule(), $weekday);
+        $availability = $modelSchedule->getScheduleAvailibilityWeekday($event->getSchedule(), $weekday);
         
         $hourStart = DateUtil::getDateOnlyHours($event->getDurationStart())->getTimestamp();
         $hourStop = DateUtil::getDateOnlyHours($event->getDurationStop())->getTimestamp();

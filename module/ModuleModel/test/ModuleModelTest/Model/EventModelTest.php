@@ -21,6 +21,13 @@ class EventModelTest extends Util\AbstractModelTest
     
     protected $scheduledEvents;
     
+    public function testGetScheduleWeek()
+    {
+//         $a = $this->getModelEvent()->getWeeklyPlannedEvents($this->scheduleDefined);
+//         var_dump($a);
+//         $this->getModelSchedule()->getScheduleEvents($this->scheduleUserChoise, new \DateTime("2013-04-22"));
+    }
+    
     public function testAddEventTooEarly()
     {
         $event = new EventEntity();
@@ -154,6 +161,15 @@ class EventModelTest extends Util\AbstractModelTest
         $model->save($eventOccurecne);
         
         $this->assertNotEmpty($eventOccurecne->getId());
+        
+        $stats = $model->getWeeklyPlannedOcurredEventsGrouppedStats($this->scheduleDefined, new \DateTime("2013-05-02 00:00:00"));
+        
+        $this->assertEquals(1, $stats[$event->getId()]);
+        
+        $list = $model->getWeeklyPlannedOcurredEvents($this->scheduleDefined, new \DateTime("2013-05-02 00:00:00"));
+        
+        $this->assertEquals(1, count($list));
+        $this->assertEquals($event->getId(), $list[0]->getEvent()->getId());
     }
     
     public function setUp()
