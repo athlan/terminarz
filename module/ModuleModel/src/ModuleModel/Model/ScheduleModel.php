@@ -2,9 +2,12 @@
 
 namespace ModuleModel\Model;
 
+use ModuleModel\Entity\ScheduleEntity;
+
 class ScheduleModel extends Util\AbstractDoctrineModel
 {
     private $entity = 'ModuleModel\Entity\ScheduleEntity';
+    private $entityAvailability = 'ModuleModel\Entity\ScheduleAvailabilityEntity';
     
     /**
      * @param int $id
@@ -21,5 +24,16 @@ class ScheduleModel extends Util\AbstractDoctrineModel
     public function fetchAll(array $params = [])
     {
         return $this->em()->getRepository($this->entity)->findAll();
+    }
+    
+    public function getScheduleWeekdayAvailibility(ScheduleEntity $schedule, $weekday)
+    {
+        return $this->em()
+            ->getRepository($this->entityAvailability)->findBy([
+                'schedule' => $schedule->getId(),
+                'repeatWeekday' => $weekday,
+            ], [
+                'durationStart' => 'ASC',
+            ]);
     }
 }

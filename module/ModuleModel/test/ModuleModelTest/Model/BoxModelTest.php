@@ -2,22 +2,124 @@
 
 namespace ModuleModelTest\Model;
 
+use ModuleModel\Entity\EventEntity;
+
 use ModuleModel\Entity\ScheduleAvailabilityEntity;
 
 use ModuleModelTest\Bootstrap;
 
 class BoxModelTest extends Util\AbstractModelTest
 {
+    protected $userCompany;
+    protected $userIndividual;
+    
     protected $scheduleDefined;
     protected $scheduleUserChoise;
     protected $serviceList;
     
-    public function testClearEntities()
+    public function testAddEventTooEarly()
     {
-        $this->assertEquals(0, 1);
+        $event = new EventEntity();
+        $event->setSchedule($this->scheduleUserChoise);
+        $event->setService($this->serviceList[0]);
+        $event->setDurationStart(new \DateTime("2013-05-01 03:00:00")); // it is thursday
+        $event->setDurationStop(new \DateTime("2013-05-01 05:00:00"));
+        
+        $model = $this->getModelEvent();
+    
+        try {
+            $model->saveToScheduleUserChoise($event);
+        }
+        catch(\Exception $e) {
+            $this->assertEquals("Event is planned to early", $e->getMessage());
+            return;
+        }
+    
+        $this->fail("An exception expected");
     }
     
-    protected function setUp()
+    public function testAddEventTooEarlyIntersect()
+    {
+        $event = new EventEntity();
+        $event->setSchedule($this->scheduleUserChoise);
+        $event->setService($this->serviceList[0]);
+        $event->setDurationStart(new \DateTime("2013-05-01 03:00:00")); // it is thursday
+        $event->setDurationStop(new \DateTime("2013-05-01 15:00:00"));
+        
+        $model = $this->getModelEvent();
+        
+        try {
+            $model->saveToScheduleUserChoise($event);
+        }
+        catch(\Exception $e) {
+            $this->assertEquals("Event is planned to early", $e->getMessage());
+            return;
+        }
+    
+        $this->fail("An exception expected");
+    }
+    
+    public function testAddEventTooLate()
+    {
+        $event = new EventEntity();
+        $event->setSchedule($this->scheduleUserChoise);
+        $event->setService($this->serviceList[0]);
+        $event->setDurationStart(new \DateTime("2013-05-01 19:00:00")); // it is thursday
+        $event->setDurationStop(new \DateTime("2013-05-01 20:00:00"));
+    
+        $model = $this->getModelEvent();
+    
+        try {
+            $model->saveToScheduleUserChoise($event);
+        }
+        catch(\Exception $e) {
+            $this->assertEquals("Event is planned to late", $e->getMessage());
+            return;
+        }
+    
+        $this->fail("An exception expected");
+    }
+    
+    public function testAddEventTooLateIntersect()
+    {
+        $event = new EventEntity();
+        $event->setSchedule($this->scheduleUserChoise);
+        $event->setService($this->serviceList[0]);
+        $event->setDurationStart(new \DateTime("2013-05-01 14:00:00")); // it is thursday
+        $event->setDurationStop(new \DateTime("2013-05-01 20:00:00"));
+    
+        $model = $this->getModelEvent();
+    
+        try {
+            $model->saveToScheduleUserChoise($event);
+        }
+        catch(\Exception $e) {
+            $this->assertEquals("Event is planned to late", $e->getMessage());
+            return;
+        }
+    
+        $this->fail("An exception expected");
+    }
+    
+    public function testAddEventProperly()
+    {
+        $event = new EventEntity();
+        $event->setSchedule($this->scheduleUserChoise);
+        $event->setService($this->serviceList[0]);
+        $event->setDurationStart(new \DateTime("2013-05-01 14:00:00")); // it is thursday
+        $event->setDurationStop(new \DateTime("2013-05-01 15:00:00"));
+    
+        $model = $this->getModelEvent();
+        
+        $model->saveToScheduleUserChoise($event);
+        
+        $eventOccurecne = $model->createEventOccurence($event, $this->userIndividual);
+        $model->save($eventOccurecne);
+        
+        $this->assertNotEmpty($event->getId());
+    }
+    
+    public function setUp()
     {
         parent::setUp();
         
@@ -28,6 +130,16 @@ class BoxModelTest extends Util\AbstractModelTest
         $user->setScope(\ModuleModel\Entity\UserScopeEnum::NATIVE);
         
         $this->getModelUser()->save($user);
+        $this->userCompany = $user;
+        
+        // create user...
+        $user = new \ModuleModel\Entity\UserEntity();
+        $user->setUsername('test@example.com');
+        $user->setType(\ModuleModel\Entity\UserTypeEnum::INDIVIDUAL);
+        $user->setScope(\ModuleModel\Entity\UserScopeEnum::NATIVE);
+        
+        $this->getModelUser()->save($user);
+        $this->userIndividual = $user;
         
         // create company...
         $company = new \ModuleModel\Entity\CompanyEntity();
@@ -79,8 +191,25 @@ class BoxModelTest extends Util\AbstractModelTest
         
         // configure hours
         foreach (range(1,6) as $day) {
+            // user choice schedule open hours
             $scheduleAvailability = new \ModuleModel\Entity\ScheduleAvailabilityEntity();
             $scheduleAvailability->setSchedule($this->scheduleDefined);
+            $scheduleAvailability->setRepeatWeekday($day);
+            
+            if($day != 6) {
+                $scheduleAvailability->setDurationStart(new \DateTime("1970-01-01 08:00:00"));
+                $scheduleAvailability->setDurationStop(new \DateTime("1970-01-01 16:00:00"));
+            }
+            else {
+                $scheduleAvailability->setDurationStart(new \DateTime("1970-01-01 09:00:00"));
+                $scheduleAvailability->setDurationStop(new \DateTime("1970-01-01 13:00:00"));
+            }
+            
+            $this->getModelSchedule()->save($scheduleAvailability);
+            
+            // user choice schedule open hours
+            $scheduleAvailability = new \ModuleModel\Entity\ScheduleAvailabilityEntity();
+            $scheduleAvailability->setSchedule($this->scheduleUserChoise);
             $scheduleAvailability->setRepeatWeekday($day);
             
             if($day != 6) {
@@ -96,20 +225,24 @@ class BoxModelTest extends Util\AbstractModelTest
         }
     }
     
-    protected function tearDown()
+    public function tearDown()
     {
         parent::tearDown();
         
-        $model = $this->getModelSchedule();
-        foreach ($model->fetchAll() as $entity) {
-            $model->remove($entity);
-        }
+//         $model = $this->getModelSchedule();
+//         foreach ($model->fetchAll() as $entity) {
+//             $model->remove($entity);
+//         }
         
-        $model = $this->getModelCompany();
+//         var_dump($model->fetchAll());
         
-        foreach ($model->fetchAll() as $entity) {
-            $model->remove($entity);
-        }
+//         die('CHUJJJJJ');
+//         var_dump($entity);
+//         $model = $this->getModelCompany();
+        
+//         foreach ($model->fetchAll() as $entity) {
+//             $model->remove($entity);
+//         }
         
         $model = $this->getModelUser();
         foreach ($model->fetchAll() as $entity) {

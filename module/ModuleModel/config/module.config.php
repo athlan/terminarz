@@ -29,6 +29,7 @@ return array(
             'ModuleModel\User' => 'ModuleModel\Model\UserModel',
             'ModuleModel\Company' => 'ModuleModel\Model\CompanyModel',
             'ModuleModel\Schedule' => 'ModuleModel\Model\ScheduleModel',
+            'ModuleModel\Event' => 'ModuleModel\Model\EventModel',
         ),
     ),
     

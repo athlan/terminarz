@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  * @ORM\Table(name="event")
+ * @ORM\HasLifecycleCallbacks
  */
 class EventEntity extends Util\AbstractEntity
 {
@@ -58,7 +59,7 @@ class EventEntity extends Util\AbstractEntity
     
     /**
      * @var int
-     * @ORM\Column(type="integer");
+     * @ORM\Column(type="integer", nullable=true);
      */
     protected $repeatWeekday;
     
@@ -273,8 +274,19 @@ class EventEntity extends Util\AbstractEntity
     
         if(!$date instanceof \DateTime)
             throw new \Exception('$date have to be instance of DateTime');
-    
+        
         $this->durationStop = $date;
     }
     
+    /**
+     * @ORM\PrePersist
+     */
+    public function prePersistAction()
+    {
+        if(null === $this->getPrice())
+            $this->setPrice($this->getService()->getPrice());
+        
+        if(null === $this->getQuantity())
+            $this->setQuantity($this->getService()->getQuantity());
+    }
 }

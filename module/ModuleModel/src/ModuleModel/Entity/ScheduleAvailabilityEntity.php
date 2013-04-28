@@ -33,13 +33,13 @@ class ScheduleAvailabilityEntity extends Util\AbstractEntity
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="datetime", nullable=true);
+     * @ORM\Column(type="time", nullable=true);
      */
     protected $durationStart;
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="datetime", nullable=true);
+     * @ORM\Column(type="time", nullable=true);
      */
     protected $durationStop;
     

@@ -20,7 +20,7 @@ class CompanyEntity extends Util\AbstractEntity
     
     /**
      * @var \ModuleModel\Entity\UserEntity
-     * @ORM\OneToOne(targetEntity="ModuleModel\Entity\UserEntity")
+     * @ORM\OneToOne(targetEntity="ModuleModel\Entity\UserEntity", cascade={"persist"})
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
     protected $owner;

@@ -26,4 +26,11 @@ abstract class AbstractModelTest extends \PHPUnit_Framework_TestCase
     public function getModelSchedule() {
         return Bootstrap::getServiceManager()->get('ModuleModel\Schedule');
     }
+    
+    /**
+     * @return \ModuleModel\Model\EventModel
+     */
+    public function getModelEvent() {
+        return Bootstrap::getServiceManager()->get('ModuleModel\Event');
+    }
 }

@@ -40,18 +40,6 @@ class EventOccurenceEntity extends Util\AbstractEntity
     protected $service;
     
     /**
-     * @var \DateTime
-     * @ORM\Column(type="datetime", nullable=true);
-     */
-    protected $repeatDateStart;
-    
-    /**
-     * @var \DateTime
-     * @ORM\Column(type="datetime", nullable=true);
-     */
-    protected $repeatDateStop;
-    
-    /**
      * @var float
      * @ORM\Column(type="float");
      */
@@ -62,12 +50,6 @@ class EventOccurenceEntity extends Util\AbstractEntity
      * @ORM\Column(type="integer");
      */
     protected $quantity;
-    
-    /**
-     * @var int
-     * @ORM\Column(type="integer");
-     */
-    protected $repeatWeekday;
     
     /**
      * @var \DateTime
