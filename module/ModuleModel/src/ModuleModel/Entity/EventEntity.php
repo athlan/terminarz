@@ -65,13 +65,13 @@ class EventEntity extends Util\AbstractEntity
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="datetime");
+     * @ORM\Column(type="datetime", nullable=true);
      */
     protected $durationStart;
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="datetime");
+     * @ORM\Column(type="datetime", nullable=true);
      */
     protected $durationStop;
     
@@ -250,7 +250,7 @@ class EventEntity extends Util\AbstractEntity
     
         if(!$date instanceof \DateTime)
             throw new \Exception('$date have to be instance of DateTime');
-    
+        
         $this->durationStart = $date;
     }
     

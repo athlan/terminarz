@@ -40,6 +40,13 @@ class EventOccurenceEntity extends Util\AbstractEntity
     protected $service;
     
     /**
+     * @var \ModuleModel\Entity\EventEntity
+     * @ORM\ManyToOne(targetEntity="ModuleModel\Entity\EventEntity")
+     * @ORM\JoinColumn(onDelete="SET NULL")
+     */
+    protected $event;
+    
+    /**
      * @var float
      * @ORM\Column(type="float");
      */
@@ -144,6 +151,30 @@ class EventOccurenceEntity extends Util\AbstractEntity
             throw new \Exception('$schedule have to be instance of ServiceEntity');
     
         $this->service = $service;
+    }
+    
+    /**
+     * @return \ModuleModel\Entity\EventEntity
+     */
+    public function getEvent()
+    {
+        return $this->event;
+    }
+    
+    /**
+     * @param \ModuleModel\Entity\EventEntity $event
+     */
+    public function setEvent($event)
+    {
+        if(null === $event) {
+            $this->event = null;
+            return;
+        }
+    
+        if(!$event instanceof EventEntity)
+            throw new \Exception('$event have to be instance of EventEntity');
+    
+        $this->event = $event;
     }
     
 	/**

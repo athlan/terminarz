@@ -38,18 +38,22 @@ class EventModel extends Util\AbstractDoctrineModel
      * @param UserEntity $user
      * @return \ModuleModel\Entity\EventOccurenceEntity
      */
-    public function createEventOccurence(EventEntity $event, UserEntity $user, $date = null)
+    public function createEventOccurence(EventEntity $event, UserEntity $user, \DateTime $date = null)
     {
         $occurence = new EventOccurenceEntity();
         $occurence->setService($event->getService());
         $occurence->setSchedule($event->getSchedule());
         $occurence->setUser($user);
-    
+        $occurence->setEvent($event);
+        
         if(null === $date) {
             $occurence->setDurationStart($event->getDurationStart());
             $occurence->setDurationStop($event->getDurationStop());
         }
         else {
+            if($event->getRepeatWeekday() != $date->format("w"))
+                throw new \Exception("Cannot join an repeatable event to the non existsing repeatable weeday");
+            
             $occurence->setDurationStart(DateUtil::fillDateByHour($date, $event->getRepeatDateStart()));
             $occurence->setDurationStop(DateUtil::fillDateByHour($date, $event->getRepeatDateStop()));
         }
